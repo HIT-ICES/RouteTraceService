@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: route-control-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: route-control-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: route-control-service
+spec:
+  selector:
+    matchLabels:
+      app: route-control-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: route-control-service
+    spec:
+      containers:
+        - name: instance-service
+          image: 192.168.1.104:5000/instance-service:v1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
