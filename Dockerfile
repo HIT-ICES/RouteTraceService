@@ -8,7 +8,7 @@ COPY ["pom.xml", "."]
 COPY [".m2/settings.xml", ".m2/settings.xml"]
 RUN mvn -s .m2/settings.xml clean install
 COPY . .
-RUN mvn package
+RUN mvn -s .m2/settings.xml package
 
 FROM base AS final
 WORKDIR /app
