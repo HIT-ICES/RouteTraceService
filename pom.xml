@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>8</java.version>
         <java.lang.version>${java.version}</java.lang.version>
         <jdk>${java.version}</jdk>
         <maven.compiler.source>${java.version}</maven.compiler.source>

@@ -1,8 +1,8 @@
-FROM amazoncorretto:17-alpine AS base
+FROM openjdk:8-jre-alpine AS base
 WORKDIR /app
 EXPOSE 8080
 
-FROM maven:3.9-amazoncorretto-17-al2023 AS build
+FROM maven:3.9.6-eclipse-temurin-8-alpine AS build
 WORKDIR /src
 COPY ["pom.xml", "."]
 COPY [".m2/settings.xml", ".m2/settings.xml"]

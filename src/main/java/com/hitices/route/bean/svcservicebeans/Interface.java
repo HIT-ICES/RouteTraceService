@@ -1,4 +1,76 @@
 package com.hitices.route.bean.svcservicebeans;
 
-public record Interface(String Id, String Path, Double InputSize, Double OutputSize, String Method, String Info) {
+import java.util.Objects;
+import lombok.var;
+
+public final class Interface {
+    private final String Id;
+    private final String Path;
+    private final Double InputSize;
+    private final Double OutputSize;
+    private final String Method;
+    private final String Info;
+
+    public Interface(String Id, String Path, Double InputSize, Double OutputSize, String Method, String Info) {
+        this.Id = Id;
+        this.Path = Path;
+        this.InputSize = InputSize;
+        this.OutputSize = OutputSize;
+        this.Method = Method;
+        this.Info = Info;
+    }
+
+    public String Id() {
+        return Id;
+    }
+
+    public String Path() {
+        return Path;
+    }
+
+    public Double InputSize() {
+        return InputSize;
+    }
+
+    public Double OutputSize() {
+        return OutputSize;
+    }
+
+    public String Method() {
+        return Method;
+    }
+
+    public String Info() {
+        return Info;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Interface) obj;
+        return Objects.equals(this.Id, that.Id) &&
+                Objects.equals(this.Path, that.Path) &&
+                Objects.equals(this.InputSize, that.InputSize) &&
+                Objects.equals(this.OutputSize, that.OutputSize) &&
+                Objects.equals(this.Method, that.Method) &&
+                Objects.equals(this.Info, that.Info);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Id, Path, InputSize, OutputSize, Method, Info);
+    }
+
+    @Override
+    public String toString() {
+        return "Interface[" +
+                "Id=" + Id + ", " +
+                "Path=" + Path + ", " +
+                "InputSize=" + InputSize + ", " +
+                "OutputSize=" + OutputSize + ", " +
+                "Method=" + Method + ", " +
+                "Info=" + Info + ']';
+    }
+
 }

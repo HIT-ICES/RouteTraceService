@@ -12,6 +12,7 @@ import com.hitices.route.json.Span;
 import com.hitices.route.json.Tag;
 import com.hitices.route.json.Trace;
 import com.hitices.route.repository.TraceRepository;
+import lombok.var;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * @author: wangteng
@@ -93,8 +95,7 @@ public class TraceAnalyzer {
                                 .map(depd ->
                                         new DependencyDescription(entry.getKey(), depd.getKey(), depd.getValue())
                                 )
-                )
-                .toList();
+                ).collect(Collectors.toList());
 
         svcServiceClient.addDependency(targets);
 
@@ -130,11 +131,10 @@ public class TraceAnalyzer {
                         graph.put(caller.Id(), callees);
                     }
                     if (callees.containsKey(callee.Id())) continue;
-                    if (callees.containsKey(callee.Id())) continue;
-                    callees.put(callee.Id(), Map.of(
-                            "requestSize", span.getTag("request_size"),
-                            "responseSize", span.getTag("response_size")
-                    ));
+                    var map=new HashMap<String,String>();
+                    map.put("requestSize", span.getTag("request_size"));
+                    map.put("responseSize", span.getTag("response_size"));
+                    callees.put(callee.Id(), map);
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
