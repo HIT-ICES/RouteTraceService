@@ -5,7 +5,6 @@ import com.hitices.route.bean.*;
 import com.hitices.route.client.JaegerClient;
 import com.hitices.route.client.SvcServiceClient;
 import com.hitices.route.entity.TraceEntity;
-import com.hitices.route.json.Edge;
 import com.hitices.route.json.Span;
 import com.hitices.route.json.Tag;
 import com.hitices.route.json.Trace;
@@ -63,6 +62,81 @@ public class TraceAnalyzer {
 
     }
 
+    /**
+     * @author Ferdinand Su
+     * 每分钟执行一次
+     */
+    @Scheduled(cron = "*/30 * * * * ?")
+    private void analyzeTraceAndPush(){
+        long end = System.currentTimeMillis();
+        long start = end-30000;
+        List<String> services = jaegerClient.getService();
+        for (String service : services){
+            List<Trace> traces = jaegerClient.getTrace(service,start,end);
+            for (Trace trace:traces){
+                trace.removeUseless();
+                try {
+                    saveTrace(service, trace);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * @author Ferdinand Su
+     * @param traces
+     */
+    void RecordTraces(List<Trace> traces)
+    {
+        //log.info("Recording ${traces.Count} Traces");
+        for (var trace : traces)
+        {
+            try
+            {
+                for (var span : trace.getSpans())
+                {
+                    var calleeService = span.GetTag<string>("istio.canonical_service");
+                    if (calleeService == dashboard || calleeService is null) continue;
+                    var requestUri = new Uri(span.GetTag<string>("http.url")!);
+                    var calleePath = requestUri!.AbsolutePath;
+                    var callee = ifDict.GetInterface(calleeService, calleePath, span.GetTag<string>("http.method")!);
+                    if (callee is null) continue;
+                    var callerIp = span.GetTag<string>("peer.address");// caller-ip
+                    var calleeIp = span.GetTag<string>("node_id")?.Split("~")?[1]; // callee-ip
+                    if (calleeIp is null || callerIp is null)
+                    {
+                        continue;
+                    }
+                    State.HostApiMap[calleeIp] = callee;
+                    if (!State.HostApiMap.TryGetValue(callerIp, out var caller)) continue;
+
+                    var existingCaller = State.Graph.TryGetValue(
+                            caller.Id, out var callees);
+                    if (!existingCaller)
+                    {
+                        callees = [];
+                        State.Graph[caller.Id] = callees;
+                    }
+                    if (callees!.ContainsKey(callee.Id)) continue;
+
+                    callees[callee.Id] = new()
+                    {
+                        {"requestSize", span.GetTag<string>("request_size") },
+                        {"responseSize", span.GetTag<string>("response_size") }
+                    };
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+    }
+
+
     private void saveTrace(String service, Trace trace) throws MalformedURLException {
         Gson gson = new Gson();
         TraceEntity traceEntity = new TraceEntity();
@@ -106,7 +180,7 @@ public class TraceAnalyzer {
         }
         if (!dependencyBeans.isEmpty()){
             log.info(gson.toJson(dependencyBeans));
-            svcServiceClient.addService(dependencyBeans);
+            svcServiceClient.autoUpdateDependency(dependencyBeans);
         }
     }
 
