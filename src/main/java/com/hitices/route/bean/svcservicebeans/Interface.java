@@ -15,15 +15,7 @@ public final class Interface {
     private Double OutputSize;
     private String Method;
     private String Info;
-
-    public Interface(String Id, String Path, Double InputSize, Double OutputSize, String Method, String Info) {
-        this.Id = Id;
-        this.Path = Path;
-        this.InputSize = InputSize;
-        this.OutputSize = OutputSize;
-        this.Method = Method;
-        this.Info = Info;
-    }
+    
 
     public String Id() {
         return Id;
