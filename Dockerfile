@@ -6,7 +6,7 @@ FROM maven:3.9-amazoncorretto-21-al2023 AS build
 WORKDIR /src
 COPY ["pom.xml", "."]
 COPY [".m2", "."]
-RUN mvn clean install
+RUN mvn -s .m2/settings.xml clean install
 COPY . .
 RUN mvn package
 
