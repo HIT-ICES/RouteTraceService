@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: $SVC_NAME
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080 # change this to the desired port if needed
+  selector:
+    app: $SVC_NAME
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $SVC_NAME # change this to the desired name if needed
+spec:
+  selector:
+    matchLabels:
+      app: $SVC_NAME # change this to the desired label if needed
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: $SVC_NAME # change this to the desired label if needed
+    spec:
+      containers:
+        - image: $IMG_REPO/$SVC_NAME:$IMG_TAG # change this to the desired image if needed
+          name: $SVC_NAME # change this to the desired name if needed
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080 # change this to the desired port if needed 
+              name: http # change this to the desired name if needed 
