@@ -2,33 +2,24 @@ package com.hitices.route.bean.svcservicebeans;
 
 import java.util.List;
 import java.util.Objects;
-import lombok.var;
 
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class Service {
-    private final String Id;
-    private final String Name;
-    private final String Repo;
-    private final String ImageUrl;
-    private final Version Version;
-    private final List<Interface> Interfaces;
-    private final Resource IdleResource;
-    private final Resource DesiredResource;
-    private final int DesiredCapability;
+    private String Id;
+    private String Name;
+    private String Repo;
+    private String ImageUrl;
+    private Version Version;
+    private List<Interface> Interfaces;
+    private Resource IdleResource;
+    private Resource DesiredResource;
+    private int DesiredCapability;
 
-    public Service(String Id, String Name, String Repo, String ImageUrl, Version Version,
-                   List<Interface> Interfaces,
-                   Resource IdleResource,
-                   Resource DesiredResource, int DesiredCapability) {
-        this.Id = Id;
-        this.Name = Name;
-        this.Repo = Repo;
-        this.ImageUrl = ImageUrl;
-        this.Version = Version;
-        this.Interfaces = Interfaces;
-        this.IdleResource = IdleResource;
-        this.DesiredResource = DesiredResource;
-        this.DesiredCapability = DesiredCapability;
-    }
 
     public String Id() {
         return Id;

@@ -1,33 +1,22 @@
 package com.hitices.route.bean.svcservicebeans;
 
-import lombok.var;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class AutoTraceDependencyDescription {
-    private final String CallerService;
-    private final String CallerInterface;
-    private final String CalleeService;
-    private final String CalleeInterface;
-    private final Double RequestSize;
-    private final Double ResponseSize;
-
-    public AutoTraceDependencyDescription(
-            String CallerService,
-            String CallerInterface,
-            String CalleeService,
-            String CalleeInterface,
-            Double RequestSize,
-            Double ResponseSize) {
-        this.CallerService = CallerService;
-        this.CallerInterface = CallerInterface;
-        this.CalleeService = CalleeService;
-        this.CalleeInterface = CalleeInterface;
-        this.RequestSize = RequestSize;
-        this.ResponseSize = ResponseSize;
-    }
+    private String CallerService;
+    private String CallerInterface;
+    private String CalleeService;
+    private String CalleeInterface;
+    private Double RequestSize;
+    private Double ResponseSize;
 
     public String CallerService() {
         return CallerService;

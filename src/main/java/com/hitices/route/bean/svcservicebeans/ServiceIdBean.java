@@ -1,15 +1,17 @@
 package com.hitices.route.bean.svcservicebeans;
 
 import java.util.Objects;
-import lombok.var;
 
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class ServiceIdBean {
     public static final ServiceIdBean ALL = new ServiceIdBean("");
-    private final String serviceId;
+    private String serviceId;
 
-    public ServiceIdBean(String serviceId) {
-        this.serviceId = serviceId;
-    }
 
     public String serviceId() {
         return serviceId;

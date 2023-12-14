@@ -1,18 +1,17 @@
 package com.hitices.route.bean.svcservicebeans;
 
 import java.util.Objects;
-import lombok.var;
 
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class Version {
-    private final String Major;
-    private final String Minor;
-    private final String Patch;
-
-    public Version(String Major, String Minor, String Patch) {
-        this.Major = Major;
-        this.Minor = Minor;
-        this.Patch = Patch;
-    }
+    private String Major;
+    private String Minor;
+    private String Patch;
 
     public String Major() {
         return Major;

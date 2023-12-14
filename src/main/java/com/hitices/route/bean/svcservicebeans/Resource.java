@@ -1,23 +1,21 @@
 package com.hitices.route.bean.svcservicebeans;
 
 import java.util.Objects;
-import lombok.var;
 
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class Resource {
     public static final Resource Null = new Resource(0.0, 0.0, 0.0, 0.0, 0.0);
-    private final Double Cpu;
-    private final Double Ram;
-    private final Double Disk;
-    private final Double GpuCore;
-    private final Double GpuMem;
+    private Double Cpu;
+    private Double Ram;
+    private Double Disk;
+    private Double GpuCore;
+    private Double GpuMem;
 
-    public Resource(Double Cpu, Double Ram, Double Disk, Double GpuCore, Double GpuMem) {
-        this.Cpu = Cpu;
-        this.Ram = Ram;
-        this.Disk = Disk;
-        this.GpuCore = GpuCore;
-        this.GpuMem = GpuMem;
-    }
 
     public Double Cpu() {
         return Cpu;

@@ -1,20 +1,19 @@
 package com.hitices.route.bean.svcservicebeans;
 
-import lombok.var;
+import lombok.*;
 
 import java.util.Map;
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class DependencyDescription {
-    private final String Caller;
-    private final String Callee;
-    private final Map<String, String> ExtraData;
+    private String Caller;
+    private String Callee;
+    private Map<String, String> ExtraData;
 
-    public DependencyDescription(String Caller, String Callee, Map<String, String> ExtraData) {
-        this.Caller = Caller;
-        this.Callee = Callee;
-        this.ExtraData = ExtraData;
-    }
 
     public String Caller() {
         return Caller;

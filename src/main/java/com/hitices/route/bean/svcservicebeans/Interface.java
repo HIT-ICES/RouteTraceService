@@ -1,15 +1,20 @@
 package com.hitices.route.bean.svcservicebeans;
 
 import java.util.Objects;
-import lombok.var;
 
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class Interface {
-    private final String Id;
-    private final String Path;
-    private final Double InputSize;
-    private final Double OutputSize;
-    private final String Method;
-    private final String Info;
+    private String Id;
+    private String Path;
+    private Double InputSize;
+    private Double OutputSize;
+    private String Method;
+    private String Info;
 
     public Interface(String Id, String Path, Double InputSize, Double OutputSize, String Method, String Info) {
         this.Id = Id;
