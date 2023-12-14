@@ -78,7 +78,7 @@ public class TraceAnalyzer {
         List<String> services = jaegerClient.getService();
         Map<String, Map<String, Map<String, String>>> graph = new HashMap<>();
         var hostApiMap = new HashMap<String, Interface>();
-        var ifDict = new StoredServiceManager(svcServiceClient.getServicesById(ServiceIdBean.ALL));
+        var ifDict = new StoredServiceManager(svcServiceClient.getServicesById(ServiceIdBean.ALL).getData());
 
         // Fetch Step
 
