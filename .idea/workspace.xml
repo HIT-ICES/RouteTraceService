@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39be9e7c-a725-49f6-a6e0-3010a8295294" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hitices/route/service/StoredServiceManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hitices/route/service/StoredServiceManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hitices/route/service/TraceAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hitices/route/service/TraceAnalyzer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

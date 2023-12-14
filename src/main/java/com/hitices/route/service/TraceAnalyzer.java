@@ -96,7 +96,7 @@ public class TraceAnalyzer {
                                         new DependencyDescription(entry.getKey(), depd.getKey(), depd.getValue())
                                 )
                 ).collect(Collectors.toList());
-
+        log.info(targets.size() + " dependencies recorded.");
         svcServiceClient.addDependency(targets);
 
     }
