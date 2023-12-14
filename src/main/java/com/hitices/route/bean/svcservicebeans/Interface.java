@@ -15,7 +15,7 @@ public final class Interface {
     private Double OutputSize;
     private String Method;
     private String Info;
-    
+
 
     public String Id() {
         return Id;

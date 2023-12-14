@@ -2,6 +2,7 @@ package com.hitices.route.client;
 
 import com.hitices.route.bean.DependencyBean;
 import com.hitices.route.bean.svcservicebeans.DependencyDescription;
+import com.hitices.route.bean.svcservicebeans.MResponse;
 import com.hitices.route.bean.svcservicebeans.Service;
 import com.hitices.route.bean.svcservicebeans.ServiceIdBean;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -18,5 +19,5 @@ public interface SvcServiceClient {
     @RequestMapping(value = "/service/addDependencies", method = RequestMethod.POST)
     void addDependency(@RequestBody  List<DependencyDescription> descriptions);
     @RequestMapping(value = "/service/getById", method = RequestMethod.POST)
-    List<Service> getServicesById(@RequestBody ServiceIdBean serviceId);
+    MResponse< List<Service>> getServicesById(@RequestBody ServiceIdBean serviceId);
 }
