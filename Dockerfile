@@ -5,9 +5,10 @@ EXPOSE 8080
 FROM maven:3.9-amazoncorretto-21-al2023 AS build
 WORKDIR /src
 COPY ["pom.xml", "."]
-RUN mvn clean install
+COPY [".m2/settings.xml", ".m2/settings.xml"]
+RUN mvn -s .m2/settings.xml clean install
 COPY . .
-RUN mvn package
+RUN mvn -s .m2/settings.xml package
 
 FROM base AS final
 WORKDIR /app
