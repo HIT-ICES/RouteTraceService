@@ -19,6 +19,9 @@ import java.util.Objects;
 public class NodeBean {
     private String ip;
     private String name;
+    private String service;
+    private Long duration;
+    private String host_ip;
 
     @Override
     public String toString() {

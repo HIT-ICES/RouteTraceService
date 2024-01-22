@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupBean {
+public class GraphBean {
     private List<EdgeBean> edges;
     private HashSet<NodeBean> nodes;
 }

@@ -19,3 +19,8 @@ spring:
 JaegerConfig:
   url: ${JAEGER_URL:http://192.168.1.104:30284}
   kiali: ${KIALI_URL:http://192.168.1.104:30594}
+
+KubeSphereConfig:
+  url: ${KUBESPHERE_URL:http://192.168.1.104:30880}
+  username: ${KUBESPHERE_USERANME:admin}
+  password: ${KUBESPHERE_PASSWORD:Admin000123}

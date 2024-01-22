@@ -6,11 +6,10 @@ import com.hitices.route.bean.svcservicebeans.DependencyDescription;
 import com.hitices.route.bean.svcservicebeans.Interface;
 import com.hitices.route.bean.svcservicebeans.ServiceIdBean;
 import com.hitices.route.client.JaegerClient;
+import com.hitices.route.client.KubeSphereClient;
 import com.hitices.route.client.SvcServiceClient;
 import com.hitices.route.entity.TraceEntity;
-import com.hitices.route.json.Span;
-import com.hitices.route.json.Tag;
-import com.hitices.route.json.Trace;
+import com.hitices.route.json.*;
 import com.hitices.route.repository.TraceRepository;
 import lombok.var;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +41,9 @@ public class TraceAnalyzer {
 
     @Autowired
     private SvcServiceClient svcServiceClient;
+
+    @Autowired
+    private KubeSphereClient kubeSphereClient;
 
     private static ExecutorService executorService = Executors.newFixedThreadPool(20);
 
@@ -150,6 +152,8 @@ public class TraceAnalyzer {
         traceEntity.setService(service);
         traceEntity.setTraceId(trace.getTraceID());
         traceEntity.setData(gson.toJson(trace));
+        traceEntity.setRequestSize(Long.parseLong(trace.getSpans().get(0).getTag("request_size")));
+        traceEntity.setResponseSize(Long.parseLong(trace.getSpans().get(0).getTag("response_size")));
         traceEntity.setTime(new Date(trace.getSpans().get(0).getStartTime() / 1000));
         for (Span span : trace.getSpans()) {
             if (service.equals(span.getTag("istio.canonical_service") + "." + span.getTag("istio.namespace"))) {
@@ -158,9 +162,10 @@ public class TraceAnalyzer {
                 break;
             }
         }
+        traceEntity.setGraph(gson.toJson(analyzeTraceGraph(trace)));
         log.info(traceEntity.getData());
         traceRepository.save(traceEntity);
-        analyzeDependency(traceEntity);
+//        analyzeDependency(traceEntity);
     }
 
     private void analyzeDependency(TraceEntity entity) throws MalformedURLException {
@@ -251,34 +256,40 @@ public class TraceAnalyzer {
         return traces;
     }
 
-    public GroupBean getTraceGraph(Long id) {
-        Gson gson = new Gson();
-        TraceEntity entity = traceRepository.findById(id);
+    public GraphBean analyzeTraceGraph(Trace trace){
         List<EdgeBean> edges = new ArrayList<>();
         HashSet<NodeBean> nodes = new HashSet<>();
-        Trace trace = gson.fromJson(entity.getData(), Trace.class);
-        for (Span span : trace.getSpans()) {
+        for (Span span:trace.getSpans()){
             String peer = "", local = "", info = "", node = "";
-            for (Tag tag : span.getTags()) {
-                if (tag.getKey().equals("peer.address")) {
+            for (Tag tag:span.getTags()){
+                if (tag.getKey().equals("peer.address")){
                     peer = tag.getValue();
                 }
-                if (tag.getKey().equals("node_id")) {
+                if (tag.getKey().equals("node_id")){
                     local = tag.getValue().split("~")[1];
                     node = tag.getValue().split("~")[2];
                 }
-                if (tag.getKey().equals("http.url")) {
+                if (tag.getKey().equals("http.url")){
                     info = tag.getValue();
                 }
             }
-            if (!peer.equals(local)) {
-                EdgeBean edgeBean = new EdgeBean(peer, local, info);
+            if (!peer.equals(local)){
+                EdgeBean edgeBean = new EdgeBean(peer,local,info);
                 edges.add(edgeBean);
-                nodes.add(new NodeBean(peer, ""));
-                nodes.add(new NodeBean(local, node));
+                log.info(node);
+                PodItem item = kubeSphereClient.getPodByName(node.split("\\.")[0]).getItems().get(0);
+                nodes.add(new NodeBean(local, node, item.getMetadata().getLabels().get("app"), span.getDuration(),item.getStatus().getHostIP()));
+            }else {
+                PodItem item = kubeSphereClient.getPodByName(node.split("\\.")[0]).getItems().get(0);
+                nodes.add(new NodeBean(peer, node, item.getMetadata().getLabels().get("app"), span.getDuration(), item.getStatus().getHostIP()));
             }
         }
-        return new GroupBean(edges, nodes);
+        return new GraphBean(edges,nodes);
     }
 
+    public GraphBean getTraceGraph(Long id){
+        Gson gson = new Gson();
+        TraceEntity entity = traceRepository.findById(id);
+        return gson.fromJson(entity.getGraph(), GraphBean.class);
+    }
 }

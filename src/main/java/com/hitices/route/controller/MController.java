@@ -1,11 +1,10 @@
 package com.hitices.route.controller;
 
-import com.hitices.route.bean.GroupBean;
+import com.hitices.route.bean.GraphBean;
 import com.hitices.route.bean.ServiceBean;
 import com.hitices.route.bean.TraceBean;
 import com.hitices.route.client.JaegerClient;
 import com.hitices.route.json.Graph;
-import com.hitices.route.json.Trace;
 import com.hitices.route.service.TraceAnalyzer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -41,7 +40,7 @@ public class MController {
     }
 
     @GetMapping("/trace/detail")
-    public GroupBean getTraceGraph(@RequestParam("id") Long id){
+    public GraphBean getTraceGraph(@RequestParam("id") Long id){
         return traceAnalyzer.getTraceGraph(id);
     }
 

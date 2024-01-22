@@ -23,20 +23,29 @@ public class TraceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "service", nullable = false)
+    @Column(name = "service", nullable = true)
     private String service;
 
-    @Column(name = "api", nullable = false)
+    @Column(name = "api", nullable = true)
     private String api;
 
-    @Column(name = "traceId", nullable = false)
+    @Column(name = "traceId", nullable = true)
     private String traceId;
 
-    @Column(name = "time", nullable = false)
+    @Column(name = "time", nullable = true)
     private Date time;
 
-    @Column(name = "data", nullable = false)
+    @Column(name = "data", nullable = true)
     private String data;
+
+    @Column(name = "graph_data", nullable = true)
+    private String graph;
+
+    @Column(name = "request_size", nullable = true)
+    private Long requestSize;
+
+    @Column(name = "response_size", nullable = true)
+    private Long responseSize;
 
     public TraceEntity() {
 

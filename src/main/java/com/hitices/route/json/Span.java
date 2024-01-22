@@ -37,4 +37,8 @@ public class Span {
             return "0";
         }
     }
+
+    public void addTag(String key, String value){
+        tags.add(new Tag(key, value));
+    }
 }
