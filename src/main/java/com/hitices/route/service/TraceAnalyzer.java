@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.hitices.route.bean.*;
 import com.hitices.route.bean.svcservicebeans.DependencyDescription;
 import com.hitices.route.bean.svcservicebeans.Interface;
+import com.hitices.route.bean.svcservicebeans.Service;
 import com.hitices.route.bean.svcservicebeans.ServiceIdBean;
 import com.hitices.route.client.JaegerClient;
 import com.hitices.route.client.KubeSphereClient;
@@ -13,12 +14,20 @@ import com.hitices.route.json.*;
 import com.hitices.route.repository.TraceRepository;
 import lombok.var;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TemporalType;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +53,11 @@ public class TraceAnalyzer {
 
     @Autowired
     private KubeSphereClient kubeSphereClient;
+
+    Configuration configuration = new Configuration().configure();
+
+    // 创建 SessionFactory
+    SessionFactory sessionFactory = configuration.buildSessionFactory();
 
     private static ExecutorService executorService = Executors.newFixedThreadPool(20);
 
@@ -165,7 +179,7 @@ public class TraceAnalyzer {
         traceEntity.setGraph(gson.toJson(analyzeTraceGraph(trace)));
         log.info(traceEntity.getData());
         traceRepository.save(traceEntity);
-//        analyzeDependency(traceEntity);
+        analyzeDependency(traceEntity);
     }
 
     private void analyzeDependency(TraceEntity entity) throws MalformedURLException {
@@ -197,8 +211,14 @@ public class TraceAnalyzer {
     }
 
     public List<ServiceBean> getTraceService(Long start, Long end) {
+        Session session = sessionFactory.openSession();
         List<ServiceBean> serviceBeans = new ArrayList<>();
-        for (String service : jaegerClient.getService()) {
+        String hql = "SELECT DISTINCT service FROM TraceEntity WHERE UNIX_TIMESTAMP(time) BETWEEN :startDate AND :endDate";
+        Query query = session.createQuery(hql);
+        query.setParameter("startDate", start/1000);
+        query.setParameter("endDate", end/1000);
+        List<String> result = query.getResultList();
+        for (String service : result) {
             List<TraceBean> traceBeans = getTrace(start, end, service);
             HashMap<String, Integer> apiCountMap = new HashMap<>();
             HashMap<String, List<Long>> apiTimeMap = new HashMap<>();
@@ -227,6 +247,7 @@ public class TraceAnalyzer {
             }
 
         }
+        session.close();
         return serviceBeans;
     }
 
@@ -256,7 +277,7 @@ public class TraceAnalyzer {
         return traces;
     }
 
-    public GraphBean analyzeTraceGraph(Trace trace){
+    public GraphBean analyzeTraceGraph(Trace trace) throws MalformedURLException {
         List<EdgeBean> edges = new ArrayList<>();
         HashSet<NodeBean> nodes = new HashSet<>();
         for (Span span:trace.getSpans()){
@@ -274,7 +295,8 @@ public class TraceAnalyzer {
                 }
             }
             if (!peer.equals(local)){
-                EdgeBean edgeBean = new EdgeBean(peer,local,info);
+                URL url = new URL(info);
+                EdgeBean edgeBean = new EdgeBean(peer,local,url.getPath());
                 edges.add(edgeBean);
                 log.info(node);
                 PodItem item = kubeSphereClient.getPodByName(node.split("\\.")[0]).getItems().get(0);

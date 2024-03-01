@@ -26,6 +26,7 @@ public class JaegerClient {
     public List<String> getService(){
         List<String> services = JaegerClient.objToList(restTemplate.getForEntity(JaegerConfig.url+JaegerConfig.getService, LinkedHashMap.class).getBody().get("data"),String.class);
         services.remove("jagger.observability");
+        services.remove("jaeger-query");
         return services;
     }
 

@@ -1,0 +1,30 @@
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+
+    <!-- 数据库连接设置 -->
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://192.168.1.104:30336/route_control</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">123456</property>
+
+        <!-- 数据库方言 -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- 显示 SQL 语句 -->
+        <property name="hibernate.show_sql">true</property>
+
+        <!-- 自动创建表 -->
+<!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
+
+        <!-- 开启 Hibernate 的二级缓存 -->
+<!--        <property name="hibernate.cache.use_second_level_cache">true</property>-->
+<!--        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>-->
+
+        <!-- 指定映射文件 -->
+        <!-- <mapping resource="com/example/YourEntity.hbm.xml"/> -->
+        <!-- 或者 -->
+         <mapping class="com.hitices.route.entity.TraceEntity"/>
+    </session-factory>
+</hibernate-configuration>

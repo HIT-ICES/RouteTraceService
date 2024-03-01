@@ -17,4 +17,5 @@ public interface TraceRepository extends JpaRepository<TraceEntity, InternalErro
     List<TraceEntity> findAllByTimeBetweenAndServiceIsOrderByDataDesc(Date start, Date end,String service);
     List<TraceEntity> findAllByTimeBetweenAndServiceIsAndApiIsOrderByDataDesc(Date start, Date end,String service, String api);
     TraceEntity findById(Long id);
+    List<String> findAllByTimeBetween(Date start, Date end);
 }
