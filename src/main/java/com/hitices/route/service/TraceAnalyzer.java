@@ -211,15 +211,21 @@ public class TraceAnalyzer {
     }
 
     public List<ServiceBean> getTraceService(Long start, Long end) {
-        Session session = sessionFactory.openSession();
+        Gson gson = new Gson();
         List<ServiceBean> serviceBeans = new ArrayList<>();
-        String hql = "SELECT DISTINCT service FROM TraceEntity WHERE UNIX_TIMESTAMP(time) BETWEEN :startDate AND :endDate";
-        Query query = session.createQuery(hql);
-        query.setParameter("startDate", start/1000);
-        query.setParameter("endDate", end/1000);
-        List<String> result = query.getResultList();
-        for (String service : result) {
-            List<TraceBean> traceBeans = getTrace(start, end, service);
+        // 获取各个服务的数
+        HashMap<String, List<TraceBean>> serviceTraceMap = new HashMap<>();
+        for (TraceEntity entity : traceRepository.findAllByTimeBetweenOrderByDataDesc(new Date(start), new Date(end))) {
+            Trace trace = gson.fromJson(entity.getData(), Trace.class);
+            if (!serviceTraceMap.containsKey(entity.getService())){
+                serviceTraceMap.put(entity.getService(),new ArrayList<>());
+            }
+            serviceTraceMap.get(entity.getService()).add(new TraceBean(entity.getId(), entity.getService(), entity.getApi(), entity.getTime(), trace));
+
+        }
+        // 统计各个服务的数据
+        for (String service : serviceTraceMap.keySet()) {
+            List<TraceBean> traceBeans = serviceTraceMap.get(service);
             HashMap<String, Integer> apiCountMap = new HashMap<>();
             HashMap<String, List<Long>> apiTimeMap = new HashMap<>();
             for (TraceBean traceBean : traceBeans) {
@@ -247,7 +253,6 @@ public class TraceAnalyzer {
             }
 
         }
-        session.close();
         return serviceBeans;
     }
 
@@ -257,10 +262,10 @@ public class TraceAnalyzer {
     }
 
 
-    public List<TraceBean> getTrace(Long start, Long end, String service) {
+    public List<TraceBean> getTrace(Long start, Long end) {
         Gson gson = new Gson();
         List<TraceBean> traces = new ArrayList<>();
-        for (TraceEntity entity : traceRepository.findAllByTimeBetweenAndServiceIsOrderByDataDesc(new Date(start), new Date(end), service)) {
+        for (TraceEntity entity : traceRepository.findAllByTimeBetweenOrderByDataDesc(new Date(start), new Date(end))) {
             Trace trace = gson.fromJson(entity.getData(), Trace.class);
             traces.add(new TraceBean(entity.getId(), entity.getService(), entity.getApi(), entity.getTime(), trace));
         }

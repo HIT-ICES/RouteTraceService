@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: wangteng
@@ -27,6 +24,13 @@ public class JaegerClient {
         List<String> services = JaegerClient.objToList(restTemplate.getForEntity(JaegerConfig.url+JaegerConfig.getService, LinkedHashMap.class).getBody().get("data"),String.class);
         services.remove("jagger.observability");
         services.remove("jaeger-query");
+        Iterator<String> iterator = services.iterator();
+        while (iterator.hasNext()) {
+            String currentString = iterator.next();
+            if (currentString.contains("cloud-collaboration-platform")) {
+                iterator.remove();
+            }
+        }
         return services;
     }
 
