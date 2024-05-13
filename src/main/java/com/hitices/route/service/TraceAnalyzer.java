@@ -117,7 +117,8 @@ public class TraceAnalyzer {
                 for (var span : trace.getSpans()) {
                     var calleeService = span.getTag("istio.canonical_service");
                     if (calleeService == null) continue;
-                    var calleePath = new URL(span.getTag("http.url")).getPath();
+                    var urlTag = span.getTag("http.url");
+                    var calleePath = urlTag.startsWith("/") ? urlTag : new URL(urlTag).getPath();
                     var callee = ifDict.getInterface(calleeService, calleePath, span.getTag("http.method"));
                     if (callee == null) continue;
                     var calleeIp = span.getTag("node_id").split("~")[1]; // callee-ip

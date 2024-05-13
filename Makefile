@@ -1,6 +1,6 @@
 # App Conf.
 APP_NAME = route-trace-service
-VERSION = 0.2.1
+VERSION = 0.2.2
 
 # Project Conf.
 PROJECT_ROOT ?=../..
