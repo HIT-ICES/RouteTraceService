@@ -1,5 +1,5 @@
 IMAGE_NAME = route-trace-service
-IMAGE_TAG = 0.2
+IMAGE_TAG = 0.2.1
 DOCKERFILE_DIR = .
 WORK_DIR = .
 PROJECT = cloud-collaboration-platform
