@@ -87,7 +87,7 @@ public class TraceAnalyzer {
      * @author Ferdinand Su
      * 每分钟执行一次
      */
-//    @Scheduled(cron = "*/30 * * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     private void analyzeTraceAndPush() {
         long end = System.currentTimeMillis();
         long start = end - 30000;
