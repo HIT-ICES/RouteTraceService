@@ -22,5 +22,6 @@ public class TraceBean {
     private String service;
     private String api;
     private Date time;
+    private Integer length;
     private Trace trace;
 }

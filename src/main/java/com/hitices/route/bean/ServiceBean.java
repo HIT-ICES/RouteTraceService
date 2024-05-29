@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 /**
  * @author: wangteng
  * @e-mail: Willtynn@outlook.com
@@ -23,4 +25,5 @@ public class ServiceBean {
     private Long percentile95;
     private Long percentile99;
     private Long high;
+    private Date time;
 }

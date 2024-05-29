@@ -28,6 +28,9 @@ public class NodeBean {
         return "NodeBean{" +
                 "ip='" + ip + '\'' +
                 ", name='" + name + '\'' +
+                ", service='" + service + '\'' +
+                ", duration=" + duration +
+                ", host_ip='" + host_ip + '\'' +
                 '}';
     }
 

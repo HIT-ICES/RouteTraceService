@@ -87,7 +87,7 @@ public class TraceAnalyzer {
      * @author Ferdinand Su
      * 每分钟执行一次
      */
-    @Scheduled(cron = "*/30 * * * * ?")
+//    @Scheduled(cron = "*/30 * * * * ?")
     private void analyzeTraceAndPush() {
         long end = System.currentTimeMillis();
         long start = end - 30000;
@@ -215,24 +215,30 @@ public class TraceAnalyzer {
         List<ServiceBean> serviceBeans = new ArrayList<>();
         // 获取各个服务的数
         HashMap<String, List<TraceBean>> serviceTraceMap = new HashMap<>();
-        for (TraceEntity entity : traceRepository.findAllByTimeBetweenOrderByDataDesc(new Date(start), new Date(end))) {
+        for (TraceEntity entity : traceRepository.findAllByTimeBetween(new Date(start), new Date(end))) {
             Trace trace = gson.fromJson(entity.getData(), Trace.class);
             if (!serviceTraceMap.containsKey(entity.getService())){
                 serviceTraceMap.put(entity.getService(),new ArrayList<>());
             }
-            serviceTraceMap.get(entity.getService()).add(new TraceBean(entity.getId(), entity.getService(), entity.getApi(), entity.getTime(), trace));
+            serviceTraceMap.get(entity.getService()).add(new TraceBean(entity.getId(), entity.getService(), entity.getApi(), entity.getTime(),0, trace));
 
         }
         // 统计各个服务的数据
         for (String service : serviceTraceMap.keySet()) {
             List<TraceBean> traceBeans = serviceTraceMap.get(service);
             HashMap<String, Integer> apiCountMap = new HashMap<>();
+            HashMap<String, Date> apiDateMap = new HashMap<>();
             HashMap<String, List<Long>> apiTimeMap = new HashMap<>();
             for (TraceBean traceBean : traceBeans) {
                 if (apiCountMap.containsKey(traceBean.getApi())) {
                     apiCountMap.put(traceBean.getApi(), apiCountMap.get(traceBean.getApi()) + 1);
                 } else {
                     apiCountMap.put(traceBean.getApi(), 1);
+                }
+                if (!apiDateMap.containsKey(traceBean.getApi())) {
+                    apiDateMap.put(traceBean.getApi(), traceBean.getTime());
+                } else if (apiDateMap.get(traceBean.getApi()).compareTo(traceBean.getTime())<0){
+                    apiDateMap.put(traceBean.getApi(), traceBean.getTime());
                 }
                 if (apiTimeMap.containsKey(traceBean.getApi())) {
                     apiTimeMap.get(traceBean.getApi()).add(traceBean.getTrace().getSpans().get(0).getDuration());
@@ -249,7 +255,7 @@ public class TraceAnalyzer {
                         , getPercentile(time, 0.5)
                         , getPercentile(time, 0.95)
                         , getPercentile(time, 0.99)
-                        , time.get(time.size() - 1)));
+                        , time.get(time.size() - 1),apiDateMap.get(api)));
             }
 
         }
@@ -261,23 +267,13 @@ public class TraceAnalyzer {
         return time.get(percentileIndex - 1);
     }
 
-
-    public List<TraceBean> getTrace(Long start, Long end) {
-        Gson gson = new Gson();
-        List<TraceBean> traces = new ArrayList<>();
-        for (TraceEntity entity : traceRepository.findAllByTimeBetweenOrderByDataDesc(new Date(start), new Date(end))) {
-            Trace trace = gson.fromJson(entity.getData(), Trace.class);
-            traces.add(new TraceBean(entity.getId(), entity.getService(), entity.getApi(), entity.getTime(), trace));
-        }
-        return traces;
-    }
-
     public List<TraceBean> getApiTrace(Long start, Long end, String service, String api) {
         Gson gson = new Gson();
         List<TraceBean> traces = new ArrayList<>();
         for (TraceEntity entity : traceRepository.findAllByTimeBetweenAndServiceIsAndApiIsOrderByDataDesc(new Date(start), new Date(end), service, api)) {
             Trace trace = gson.fromJson(entity.getData(), Trace.class);
-            traces.add(new TraceBean(entity.getId(), entity.getService(), entity.getApi(), entity.getTime(), trace));
+            GraphBean graphBean = gson.fromJson(entity.getGraph(), GraphBean.class);
+            traces.add(new TraceBean(entity.getId(), entity.getService(), entity.getApi(), entity.getTime(), graphBean.getNodes().size(), trace));
         }
         return traces;
     }
@@ -303,7 +299,6 @@ public class TraceAnalyzer {
                 URL url = new URL(info);
                 EdgeBean edgeBean = new EdgeBean(peer,local,url.getPath());
                 edges.add(edgeBean);
-                log.info(node);
                 PodItem item = kubeSphereClient.getPodByName(node.split("\\.")[0]).getItems().get(0);
                 nodes.add(new NodeBean(local, node, item.getMetadata().getLabels().get("app"), span.getDuration(),item.getStatus().getHostIP()));
             }else {
