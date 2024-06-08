@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39be9e7c-a725-49f6-a6e0-3010a8295294" name="更改" comment="fix.remove useless trace">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="39be9e7c-a725-49f6-a6e0-3010a8295294" name="更改" comment="fix.README">
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -119,7 +118,7 @@
       <workItem from="1717033710758" duration="803000" />
       <workItem from="1717037827348" duration="1061000" />
       <workItem from="1717050150802" duration="188000" />
-      <workItem from="1717812907252" duration="412000" />
+      <workItem from="1717812907252" duration="550000" />
     </task>
     <task id="LOCAL-00001" summary="fix.get trace">
       <option name="closed" value="true" />
@@ -153,7 +152,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716968843211</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fix.README">
+      <option name="closed" value="true" />
+      <created>1717813412380</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1717813412380</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -173,7 +180,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="fix.get trace" />
     <MESSAGE value="fix.remove useless trace" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix.remove useless trace" />
+    <MESSAGE value="fix.README" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix.README" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
