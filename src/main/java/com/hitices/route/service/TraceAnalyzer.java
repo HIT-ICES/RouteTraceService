@@ -133,21 +133,22 @@ public class TraceAnalyzer {
                 for (var span : trace.getSpans()) {
                     var calleeService = span.getTag("istio.canonical_service");
                     if (calleeService == null) continue;
-                    var calleePath = new URL(span.getTag("http.url")).getPath();
+                    var urlTag = span.getTag("http.url");
+                    var calleePath = urlTag.startsWith("/") ? urlTag : new URL(urlTag).getPath();
                     var callee = ifDict.getInterface(calleeService, calleePath, span.getTag("http.method"));
                     if (callee == null) continue;
-                    var callerIp = span.getTag("peer.address");// caller-ip
                     var calleeIp = span.getTag("node_id").split("~")[1]; // callee-ip
                     hostApiMap.put(calleeIp, callee);
-                    var caller = hostApiMap.getOrDefault(calleeIp, null);
-                    if (caller == null) continue;
+                    var callerIp = span.getTag("peer.address");// caller-ip
+                    var caller = hostApiMap.getOrDefault(callerIp, null);
+                    if (caller == null || caller == callee) continue;
                     var callees = graph.getOrDefault(caller.Id(), null);
                     if (callees == null) {
                         callees = new HashMap<>();
                         graph.put(caller.Id(), callees);
                     }
                     if (callees.containsKey(callee.Id())) continue;
-                    var map=new HashMap<String,String>();
+                    var map = new HashMap<String, String>();
                     map.put("requestSize", span.getTag("request_size"));
                     map.put("responseSize", span.getTag("response_size"));
                     callees.put(callee.Id(), map);

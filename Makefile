@@ -1,25 +1,45 @@
-IMAGE_NAME = route-trace-service
-IMAGE_TAG = 0.2
+# App Conf.
+APP_NAME = route-trace-service
+VERSION = 0.2.2
+
+# Project Conf.
+PROJECT_ROOT ?=../..
+PROJECT ?= cloud-collaboration-platform
+REPO_NAME ?= 192.168.1.104:5000/$(PROJECT)
+
+
+# Build Conf.
+IMAGE_NAME = $(REPO_NAME)/$(APP_NAME):v${VERSION}
+K8S_CONF_TMPL ?= deploy.yaml
 DOCKERFILE_DIR = .
 WORK_DIR = .
-PROJECT = cloud-collaboration-platform
-REPO_NAME = 192.168.1.104:5000/$(PROJECT)
-APP_NAME ?= $(IMAGE_NAME)
-SH_APP_NAME = $(APP_NAME)_sh
-DOCKER = sudo docker
-
+DOCKER = docker
+MAVEN = mvn
 K8S = kubectl -n $(PROJECT)
-K8S_REPLICA = 1
+K8S_REPLICA ?= 1
+K8S_PROFILE = IMAGE_NAME=$(IMAGE_NAME) APP_NAME=$(APP_NAME) \
+	REPLICAS=$(K8S_REPLICA) envsubst < $(K8S_CONF_TMPL)
 
-.PHONY: default install restart start stop logs uninstall deploy sh status
+maven:
+	$(MAVEN) package
 
-default:
-	$(DOCKER) build -f $(DOCKERFILE_DIR)/Dockerfile -t $(IMAGE_NAME):$(IMAGE_TAG) $(WORK_DIR)
+default: maven
+	$(DOCKER) build -f $(DOCKERFILE_DIR)/Dockerfile -t $(IMAGE_NAME) $(WORK_DIR)
 
+publish: default
+	$(DOCKER) push $(IMAGE_NAME)
 
+install:
+	$(K8S_PROFILE) | $(K8S) apply -f -
+
+uninstall:
+	$(K8S_PROFILE) | $(K8S) delete -f -
+
+profile:
+	$(K8S_PROFILE)
 
 restart:
-	$(K8S) delete pod -f -l 'app=$(APP_NAME)'
+	$(K8S) delete pod -l 'app=$(APP_NAME)'
 
 start:
 	$(K8S) scale deployment -l 'app=$(APP_NAME)' --replicas=$(K8S_REPLICA)
@@ -30,17 +50,8 @@ stop:
 logs:
 	$(K8S) logs -f -l 'app=$(APP_NAME)'
 
-uninstall:
-	IMG_TAG=$(IMAGE_TAG) SVC_NAME=$(IMAGE_NAME) IMG_REPO=$(REPO_NAME) envsubst < deploy.yaml | $(K8S) delete -f -
-
-tag: default
-	$(DOCKER) tag $(IMAGE_NAME):$(IMAGE_TAG) $(REPO_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)
-
-publish: tag
-	$(DOCKER) push $(REPO_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)
-
-install:
-	IMG_TAG=$(IMAGE_TAG) SVC_NAME=$(IMAGE_NAME) IMG_REPO=$(REPO_NAME) envsubst < deploy.yaml | $(K8S) apply -f -
-
 status:
 	watch $(K8S) get pods -l 'app=$(APP_NAME)'
+
+detail:
+	$(K8S) describe pods -l 'app=$(APP_NAME)'
